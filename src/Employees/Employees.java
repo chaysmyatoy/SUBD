@@ -2,7 +2,6 @@ package Employees;
 
 import Help.SizeSetter;
 import Entities.Data;
-
 import java.awt.Frame;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -42,7 +41,6 @@ public class Employees extends javax.swing.JDialog {
         jButtonADD = new javax.swing.JButton();
         jButtonALTER = new javax.swing.JButton();
         jButtonDELETE = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -80,13 +78,6 @@ public class Employees extends javax.swing.JDialog {
             }
         });
 
-        jButton1.setText("jButton1");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -95,12 +86,10 @@ public class Employees extends javax.swing.JDialog {
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jButtonADD, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButtonALTER, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButtonDELETE, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton1))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButtonADD, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonALTER, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonDELETE, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(21, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -113,9 +102,7 @@ public class Employees extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonALTER)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonDELETE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton1))
+                        .addComponent(jButtonDELETE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(126, Short.MAX_VALUE))
         );
@@ -124,9 +111,10 @@ public class Employees extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonADDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonADDActionPerformed
-        NewEmployees np = new NewEmployees((Frame) this.getParent(), true, connection);
+       try {
+           NewEmployees np = new NewEmployees((Frame) this.getParent(), true, connection);
         np.setVisible(true);
-        try {
+        
             model.updateData();
         } catch (SQLException ex) {
             Logger.getLogger(Employees.class.getName()).log(Level.SEVERE, null, ex);
@@ -135,16 +123,16 @@ public class Employees extends javax.swing.JDialog {
     }//GEN-LAST:event_jButtonADDActionPerformed
 
     private void jButtonALTERActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonALTERActionPerformed
-        if (jTable1.getSelectedRow() >= 0) {
+        try { if (jTable1.getSelectedRow() >= 0) {
             NewEmployees np = new NewEmployees((Frame) this.getParent(), true, 
                     connection, model.getSelectesItem(jTable1.getSelectedRow()));
-            np.setVisible(true);
-            try {
+            np.setVisible(true);        
                 model.updateData();
+            ((AbstractTableModel) jTable1.getModel()).fireTableDataChanged();
+             }
             } catch (SQLException ex) {
                 Logger.getLogger(Employees.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            ((AbstractTableModel) jTable1.getModel()).fireTableDataChanged();
+            
         }
     }//GEN-LAST:event_jButtonALTERActionPerformed
 
@@ -160,14 +148,9 @@ public class Employees extends javax.swing.JDialog {
         ((AbstractTableModel) jTable1.getModel()).fireTableDataChanged();
     }//GEN-LAST:event_jButtonDELETEActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
-
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButtonADD;
     private javax.swing.JButton jButtonALTER;
     private javax.swing.JButton jButtonDELETE;

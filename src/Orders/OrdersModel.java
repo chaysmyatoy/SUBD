@@ -66,11 +66,11 @@ public class OrdersModel extends AbstractTableModel {
             case 0:
                 return "Idorders";
             case 1:
-                return "date of ...";
-            case 2:
                 return "services id";
-            case 3:
+            case 2:
                 return "suppliers id";
+            case 3:
+                return "date of ...";
             case 4:
                 return "personal id";
         }
@@ -103,7 +103,7 @@ public class OrdersModel extends AbstractTableModel {
         }
         return orders;
     }
-    public void insertOrUpdate(Orders editItem, String servicesid, String suppliersid, String dod, String personid) {
+    public void insertOrUpdate(Orders editItem, int servicesid, int suppliersid, String dod, int personid) {
         try {
             Statement statement = c.createStatement();
             if (editItem == null) {
@@ -114,7 +114,7 @@ public class OrdersModel extends AbstractTableModel {
                     + "','" + dod + "','"
                     + personid + "');");
             } else {
-                statement.executeUpdate("update orders set servicesid='"
+                statement.executeUpdate("update orders set idorders='"
                     + servicesid + "',suppliersid='"
                     + suppliersid +
                     "',dod='" + dod + "',personid='"

@@ -95,7 +95,7 @@ public class EmployeesModel extends AbstractTableModel {
         }
         return employees;
     }
-    public void insertOrUpdate(Employees editItem,String personid,String position) {
+    public void insertOrUpdate(Employees editItem,int personid,String position) {
         try {
             Statement statement = c.createStatement();
             if (editItem == null) {

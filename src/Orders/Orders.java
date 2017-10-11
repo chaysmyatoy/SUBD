@@ -106,9 +106,9 @@ public class Orders extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonADDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonADDActionPerformed
-        NewOrders np = new NewOrders((Frame) this.getParent(), true, connection);
+       try {  NewOrders np = new NewOrders((Frame) this.getParent(), true, connection);
         np.setVisible(true);
-        try {
+       
             model.updateData();
         } catch (SQLException ex) {
             Logger.getLogger(Orders.class.getName()).log(Level.SEVERE, null, ex);
@@ -117,16 +117,20 @@ public class Orders extends javax.swing.JDialog {
     }//GEN-LAST:event_jButtonADDActionPerformed
 
     private void jButtonALTERActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonALTERActionPerformed
-        if (jTable1.getSelectedRow() >= 0) {
+         try { 
+             if (jTable1.getSelectedRow() >= 0) {
             NewOrders np = new NewOrders((Frame) this.getParent(), true, 
                     connection, model.getSelectesItem(jTable1.getSelectedRow()));
             np.setVisible(true);
-            try {
+          
                 model.updateData();
-            } catch (SQLException ex) {
-                Logger.getLogger(Orders.class.getName()).log(Level.SEVERE, null, ex);
-            }
+           
             ((AbstractTableModel) jTable1.getModel()).fireTableDataChanged();
+         }
+         
+             } catch (SQLException ex) {
+                Logger.getLogger(Orders.class.getName()).log(Level.SEVERE, null, ex);
+            
         }
     }//GEN-LAST:event_jButtonALTERActionPerformed
 
