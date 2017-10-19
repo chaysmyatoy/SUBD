@@ -2,6 +2,7 @@ package Services;
 
 import Entities.Services;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -13,6 +14,14 @@ import javax.swing.table.AbstractTableModel;
 
 public class ServicesModel extends AbstractTableModel {
     
+    
+    
+    final static String selectStr="SELECT * FROM services";
+        static final String selectByIdStr = "SELECT * FROM services WHERE idservices =?;";
+        final String insertStr = "insert into services (idservices,name,description,value) values (nextval('seqorders'::regclass),?,?,?)";
+        final String deleteStr = "delete from services where idservices=?";          
+        final String updateStr = "update services set name =?,description =?,value =? where idservices = ?";
+        
     List<Services> list = new ArrayList<>();
 
     Connection c;
@@ -80,42 +89,47 @@ public class ServicesModel extends AbstractTableModel {
     }
 
     public static List<Services> selectServices(Connection c) throws SQLException{
-        Statement statement = c.createStatement();
-        List<Services> services = new ArrayList<>();
-            ResultSet rs = statement.executeQuery("SELECT * FROM services");
-            while (rs.next()) {
-                Services item = new Services(rs.getInt("idservices"), rs.getString("name"), 
+          PreparedStatement statement = c.prepareStatement(selectStr);
+        ResultSet rs = statement.executeQuery();
+        List<Services> services = new ArrayList<>(); 
+        while (rs.next()) {
+            Services item = new Services(rs.getInt("idservices"), rs.getString("name"), 
                         rs.getString("description"), rs.getString("value"));
-
-                services.add(item);
+             services.add(item);
             }
-            return services;
+        return services;
     }
     
     public static Services selectServicesById(Connection c, int id) throws SQLException{
-    Statement statement = c.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT * FROM services WHERE idservices = "+id );
+        
+         PreparedStatement statement = c.prepareStatement(selectByIdStr);
+        statement.setInt(1, id);
+        ResultSet rs = statement.executeQuery();
         Services services = null;
-        while (rs.next()) {
+            while (rs.next()) {
            services = new Services(rs.getInt("idservices"), rs.getString("name"), 
                         rs.getString("description"), rs.getString("value"));
         }
         return services;
+        
+
     }
     public void insertOrUpdate(Services editItem, String name, String description, String value) {
-        try {
-            Statement statement = c.createStatement();
+       try {
             if (editItem == null) {
-                statement.executeUpdate("insert into services "
-                    + "(name,description,value) "
-                    + "values ('"
-                    + name + "','" + description
-                    + "','" + value + "');");
+                PreparedStatement statement = c.prepareStatement(insertStr);
+                statement.setString(1, name);
+                statement.setString(2, description);
+                statement.setString(3, value);
+
+                statement.execute();    
             } else {
-                statement.executeUpdate("update services set name='"
-                    + name + "',description='"
-                    + description +
-                    "',value='" + value + ";");
+                PreparedStatement statement = c.prepareStatement(updateStr);
+                statement.setString(1, name);
+                statement.setString(2, description);
+                statement.setString(3, value);
+                statement.setInt(4, editItem.getidservices());
+                statement.execute();   
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(new JFrame(), ex.getMessage());
@@ -123,10 +137,10 @@ public class ServicesModel extends AbstractTableModel {
     } 
     
     public void delete(int id){
-        try {
-                Statement statement = c.createStatement();
-                statement.executeUpdate("delete from services where idservices="
-                    + id + ";");
+       try {   
+            PreparedStatement statement = c.prepareStatement(deleteStr);
+            statement.setInt(1, id);
+            statement.execute();    
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(new JFrame(), ex.getMessage());
             }

@@ -5,6 +5,7 @@ import Employees.NewEmployees;
 import Entities.Data;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -16,6 +17,14 @@ import javax.swing.table.AbstractTableModel;
 
 public class EmployeesModel extends AbstractTableModel {
     
+    
+     
+        final static String selectStr="SELECT * FROM employees";
+        static final String selectByIdStr = "SELECT * FROM employees WHERE personid =?;";
+        final String insertStr = "insert into employees (position,personid) values (?,?)";
+        final String deleteStr = "delete from employees where personid=?";          
+        final String updateStr = "update employees set position=? where personid=? ";
+        
     List<Employees> list = new ArrayList<>();
 
     Connection c;
@@ -75,39 +84,39 @@ public class EmployeesModel extends AbstractTableModel {
     }
 
     public static List<Employees> selectEmployees(Connection c) throws SQLException{
-        Statement statement = c.createStatement();
-        List<Employees> employees = new ArrayList<>();
-            ResultSet rs = statement.executeQuery("SELECT * FROM employees");
-            while (rs.next()) {
-                Employees item = new Employees(rs.getInt("personid"), rs.getString("position"));
-
-                employees.add(item);
+       PreparedStatement statement = c.prepareStatement(selectStr);
+        ResultSet rs = statement.executeQuery();
+        List<Employees> employees = new ArrayList<>(); 
+        while (rs.next()) {
+            Employees item = new Employees(rs.getInt("personid"), rs.getString("position"));
+            employees.add(item);
             }
-            return employees;
+        return employees;
     }
     
     public static Employees selectEmployeesById(Connection c, int id) throws SQLException{
-    Statement statement = c.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT * FROM employees WHERE personid = "+ id );
+    PreparedStatement statement = c.prepareStatement(selectByIdStr);
+        statement.setInt(1, id);
+        ResultSet rs = statement.executeQuery();
         Employees employees = null;
-        while (rs.next()) {
-           employees = new Employees(rs.getInt("personid"), rs.getString("position"));
-        }
+            while (rs.next()) {
+            employees = new Employees( rs.getInt("personid"), rs.getString("position"));
+            }
         return employees;
     }
+    
     public void insertOrUpdate(Employees editItem,int personid,String position) {
-        try {
-            Statement statement = c.createStatement();
+       try {
             if (editItem == null) {
-                statement.executeUpdate("insert into employees "
-                    + "(position,personid) "
-                    + "values ('"
-                    + position + "','" + personid + "');");
+                PreparedStatement statement = c.prepareStatement(insertStr);
+                statement.setString(1, position);
+                statement.setInt(2, personid);
+                statement.execute();    
             } else {
-                statement.executeUpdate("update employees set "
-                    + "position='"
-                    + position + "' where personid="
-                    + editItem.getpersonid() + ";");
+                PreparedStatement statement = c.prepareStatement(updateStr);
+                statement.setString(1, position);
+                statement.setInt(2, personid);
+                statement.execute();   
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(new JFrame(), ex.getMessage());
@@ -115,10 +124,10 @@ public class EmployeesModel extends AbstractTableModel {
     } 
     
     public void delete(int id){
-        try {
-                Statement statement = c.createStatement();
-                statement.executeUpdate("delete from employees where personid="
-                    + id + ";");
+         try {   
+            PreparedStatement statement = c.prepareStatement(deleteStr);
+            statement.setInt(1, id);
+            statement.execute();    
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(new JFrame(), ex.getMessage());
             }

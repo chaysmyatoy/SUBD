@@ -2,6 +2,8 @@ package Personal_information;
 
 import Entities.Personal_information;
 import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -13,6 +15,15 @@ import javax.swing.table.AbstractTableModel;
 
 public class Personal_informationModel extends AbstractTableModel {
     
+    
+    final static String selectStr="SELECT * FROM personal_information";
+        static final String selectByIdStr = "SELECT * FROM personal_information WHERE idperson =?;";
+        final String insertStr = "insert into personal_information (idperson,name,surname,patronymic,address,number,dob) values (nextval('seqorders'::regclass),?,?,?,?,?,?)";
+        final String deleteStr = "delete from personal_information where idperson=?";          
+        final String updateStr = "update personal_information set name =?,surname =?,patronymic =?,address =?,number =?,dob =? where idperson = ?";
+        
+        
+        
     List<Personal_information> list = new ArrayList<>();
 
     Connection c;
@@ -90,263 +101,57 @@ public class Personal_informationModel extends AbstractTableModel {
     }
 
     public static List<Personal_information> selectPersonal_information(Connection c) throws SQLException{
-        Statement statement = c.createStatement();
-        List<Personal_information> personal_information = new ArrayList<>();
-            ResultSet rs = statement.executeQuery("SELECT * FROM personal_information");
-            while (rs.next()) {
-                Personal_information item = new Personal_information(rs.getInt("idperson"), rs.getString("name"), 
+         PreparedStatement statement = c.prepareStatement(selectStr);
+        ResultSet rs = statement.executeQuery();
+        List<Personal_information> personal_information = new ArrayList<>(); 
+        while (rs.next()) {
+            Personal_information item = new Personal_information(rs.getInt("idperson"), rs.getString("name"), 
                         rs.getString("surname"), rs.getString("patronymic"), 
                         rs.getString("address"), rs.getString("number"), rs.getString("dob"));
-
-                personal_information.add(item);
+             personal_information.add(item);
             }
-            return personal_information;
+        return personal_information;
+
     }
     
     public static Personal_information selectPartnerById(Connection c, int id) throws SQLException{
-    Statement statement = c.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT * FROM personal_information WHERE idperson = "+id );
+        
+         PreparedStatement statement = c.prepareStatement(selectByIdStr);
+        statement.setInt(1, id);
+        ResultSet rs = statement.executeQuery();
         Personal_information personal_information = null;
-        while (rs.next()) {
+            while (rs.next()) {
            personal_information = new Personal_information(rs.getInt("idperson"), rs.getString("name"), 
                         rs.getString("surname"), rs.getString("patronymic"), 
                         rs.getString("address"), rs.getString("number"), rs.getString("dob"));
         }
         return personal_information;
     }
+    
+    
     public void insertOrUpdate(Personal_information editItem,String name,String surname,String patronymic,String address,String number,String dob) {
         try {
-            Statement statement = c.createStatement();
             if (editItem == null) {
-                statement.executeUpdate("insert into personal_information "
-                    + "(name,surname,patronymic,address,number, dob) "
-                    + "values ('"
-                    + name + "','" + surname
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                    + "','" + patronymic + "','"
-                    + address+ "','" + number + "','" + dob + "');");
+                PreparedStatement statement = c.prepareStatement(insertStr);
+                statement.setString(1, name);
+                statement.setString(2, surname);
+                statement.setString(3, patronymic);
+                statement.setString(4, address);
+                 statement.setString(5, number);
+                statement.setDate(6, Date.valueOf(dob));
+                statement.execute();    
             } else {
-                statement.executeUpdate("update personal_information set name='"
-                    + name + "',surname='"
-                    + surname +
-                    "',patronymic='" + patronymic + "',address='"
-                    + address +"',number='" + number +"',dob='" + dob + "' where idperson="
-                    + editItem.getidperson() + ";");
+                PreparedStatement statement = c.prepareStatement(updateStr);
+                
+                statement.setString(1, name);
+                statement.setString(2, surname);
+                statement.setString(3, patronymic);
+                statement.setString(4, address);
+                statement.setString(5, number);
+                statement.setDate(6, Date.valueOf(dob));
+                statement.setInt(7, editItem.getidperson());
+
+                statement.execute();   
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(new JFrame(), ex.getMessage());
@@ -354,10 +159,10 @@ public class Personal_informationModel extends AbstractTableModel {
     } 
     
     public void delete(int id){
-        try {
-                Statement statement = c.createStatement();
-                statement.executeUpdate("delete from personal_information where idperson="
-                    + id + ";");
+       try {   
+            PreparedStatement statement = c.prepareStatement(deleteStr);
+            statement.setInt(1, id);
+            statement.execute();    
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(new JFrame(), ex.getMessage());
             }

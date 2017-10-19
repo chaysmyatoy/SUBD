@@ -2,6 +2,7 @@ package Suppliers;
 
 import Entities.Suppliers;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -12,6 +13,12 @@ import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 
 public class SuppliersModel extends AbstractTableModel {
+    
+    final static String selectStr="SELECT * FROM suppliers";
+        static final String selectByIdStr = "SELECT * FROM suppliers WHERE idsuppliers =?;";
+        final String insertStr = "insert into suppliers (idsuppliers,name,representative,address,number) values (nextval('seqorders'::regclass),?,?,?,?)";
+        final String deleteStr = "delete from suppliers where idsuppliers=?";          
+        final String updateStr = "update suppliers set name =?,representative =?,address =?,number =? where idsuppliers=?";
     
     List<Suppliers> list = new ArrayList<>();
 
@@ -82,24 +89,24 @@ public class SuppliersModel extends AbstractTableModel {
     }
 
     public static List<Suppliers> selectSuppliers(Connection c) throws SQLException{
-        Statement statement = c.createStatement();
-        List<Suppliers> suppliers = new ArrayList<>();
-            ResultSet rs = statement.executeQuery("SELECT * FROM suppliers");
-            while (rs.next()) {
-                Suppliers item = new Suppliers(rs.getInt("idsuppliers"), rs.getString("name"), 
-                        rs.getString("representative"), rs.getString("address"), 
-                        rs.getString("number"));
-
-                suppliers.add(item);
+         PreparedStatement statement = c.prepareStatement(selectStr);
+        ResultSet rs = statement.executeQuery();
+        List<Suppliers> suppliers = new ArrayList<>(); 
+        while (rs.next()) {
+            Suppliers item = new Suppliers(rs.getInt("idsuppliers"), rs.getString("name"), 
+                    rs.getString("representative"), rs.getString("address"), 
+                    rs.getString("number"));
+             suppliers.add(item);
             }
-            return suppliers;
+        return suppliers;
     }
     
     public static Suppliers selectSuppliersById(Connection c, int id) throws SQLException{
-    Statement statement = c.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT * FROM suppliers WHERE idsuppliers = "+id );
+       PreparedStatement statement = c.prepareStatement(selectByIdStr);
+        statement.setInt(1, id);
+        ResultSet rs = statement.executeQuery();
         Suppliers suppliers = null;
-        while (rs.next()) {
+            while (rs.next()) {
            suppliers = new Suppliers(rs.getInt("idsuppliers"), rs.getString("name"), 
                     rs.getString("representative"), rs.getString("address"), 
                     rs.getString("number"));
@@ -108,21 +115,21 @@ public class SuppliersModel extends AbstractTableModel {
     }
     public void insertOrUpdate(Suppliers editItem, String name, String representative, String address, String number) {
         try {
-            Statement statement = c.createStatement();
             if (editItem == null) {
-                statement.executeUpdate("insert into suppliers "
-                    + "(name,representative,address,number) "
-                    + "values ('"
-                    + name + "','" + representative
-                    + "','" + address + "','"
-                    + number + "');");
+                PreparedStatement statement = c.prepareStatement(insertStr);
+                statement.setString(1, name);
+                statement.setString(2, representative);
+                statement.setString(3, address);
+                statement.setString(4, number);
+                statement.execute();    
             } else {
-                statement.executeUpdate("update suppliers set name='"
-                    + name + "',representative='"
-                    + representative +
-                    "',address='" + address + "',number='"
-                    + number + " where idsuppliers="
-                    + editItem.getidsuppliers() + ";");
+                PreparedStatement statement = c.prepareStatement(updateStr);
+                statement.setString(1, name);
+                statement.setString(2, representative);
+                statement.setString(3, address);
+                statement.setString(4, number);
+                statement.setInt(5, editItem.getidsuppliers());
+                statement.execute();   
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(new JFrame(), ex.getMessage());
@@ -130,10 +137,10 @@ public class SuppliersModel extends AbstractTableModel {
     } 
     
     public void delete(int id){
-        try {
-                Statement statement = c.createStatement();
-                statement.executeUpdate("delete from suppliers where idsuppliers="
-                    + id + ";");
+        try {   
+            PreparedStatement statement = c.prepareStatement(deleteStr);
+            statement.setInt(1, id);
+            statement.execute();    
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(new JFrame(), ex.getMessage());
             }

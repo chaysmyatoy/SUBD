@@ -2,6 +2,8 @@ package Orders;
 
 import Entities.Orders;
 import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -13,6 +15,12 @@ import javax.swing.table.AbstractTableModel;
 
 public class OrdersModel extends AbstractTableModel {
     
+        final static String selectStr="SELECT * FROM orders";
+        static final String selectByIdStr = "SELECT * FROM orders WHERE idorders =?;";
+        final String insertStr = "insert into orders (idorders,servicesid,suppliersid,dod,personid) values (nextval('seqorders'::regclass),?,?,?,?)";
+        final String deleteStr = "delete from orders where idorders=?";          
+        final String updateStr = "update orders set servicesid =?,suppliersid =?,dod =?,personid =? where idorders=?";
+        
     List<Orders> list = new ArrayList<>();
 
     Connection c;
@@ -82,44 +90,45 @@ public class OrdersModel extends AbstractTableModel {
     }
 
     public static List<Orders> selectOrders(Connection c) throws SQLException{
-        Statement statement = c.createStatement();
-        List<Orders> partners = new ArrayList<>();
-            ResultSet rs = statement.executeQuery("SELECT * FROM orders");
-            while (rs.next()) {
-                Orders item = new Orders(rs.getInt("idorders"), rs.getInt("servicesid"), 
+         PreparedStatement statement = c.prepareStatement(selectStr);
+        ResultSet rs = statement.executeQuery();
+        List<Orders> orders = new ArrayList<>(); 
+        while (rs.next()) {
+            Orders item = new Orders(rs.getInt("idorders"), rs.getInt("servicesid"), 
                         rs.getInt("suppliersid"),rs.getString("dod"), rs.getInt("personid"));
-                partners.add(item);
+             orders.add(item);
             }
-            return partners;
+        return orders;
     }
     
     public static Orders selectOrdersById(Connection c, int id) throws SQLException{
-    Statement statement = c.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT * FROM orders WHERE idorders = "+id );
+   PreparedStatement statement = c.prepareStatement(selectByIdStr);
+        statement.setInt(1, id);
+        ResultSet rs = statement.executeQuery();
         Orders orders = null;
-        while (rs.next()) {
-           orders = new Orders(rs.getInt("idorders"), rs.getInt("servicesid"), 
+            while (rs.next()) {
+            orders = new Orders(rs.getInt("idorders"), rs.getInt("servicesid"), 
                         rs.getInt("suppliersid"),rs.getString("dod"), rs.getInt("personid"));
-        }
+            }
         return orders;
     }
     public void insertOrUpdate(Orders editItem, int servicesid, int suppliersid, String dod, int personid) {
-        try {
-            Statement statement = c.createStatement();
+       try {
             if (editItem == null) {
-                statement.executeUpdate("insert into orders "
-                    + "(servicesid,suppliersid,dod,personid) "
-                    + "values ('"
-                    + servicesid + "','" + suppliersid
-                    + "','" + dod + "','"
-                    + personid + "');");
+                PreparedStatement statement = c.prepareStatement(insertStr);
+                statement.setInt(1, servicesid);
+                statement.setInt(2, suppliersid);
+                statement.setDate(3, Date.valueOf(dod));
+                statement.setInt(4, personid);
+                statement.execute();    
             } else {
-                statement.executeUpdate("update orders set idorders='"
-                    + servicesid + "',suppliersid='"
-                    + suppliersid +
-                    "',dod='" + dod + "',personid='"
-                    + personid + " where idorders="
-                    + editItem.getIdorders() + ";");
+                PreparedStatement statement = c.prepareStatement(updateStr);
+                statement.setInt(1, servicesid);
+                statement.setInt(2, suppliersid);
+                statement.setDate(3, Date.valueOf(dod));
+                statement.setInt(4, personid);
+                statement.setInt(5, editItem.getIdorders());
+                statement.execute();   
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(new JFrame(), ex.getMessage());
@@ -127,10 +136,10 @@ public class OrdersModel extends AbstractTableModel {
     } 
     
     public void delete(int id){
-        try {
-                Statement statement = c.createStatement();
-                statement.executeUpdate("delete from orders where idorders="
-                    + id + ";");
+        try {   
+            PreparedStatement statement = c.prepareStatement(deleteStr);
+            statement.setInt(1, id);
+            statement.execute();    
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(new JFrame(), ex.getMessage());
             }
