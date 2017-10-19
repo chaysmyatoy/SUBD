@@ -42,7 +42,7 @@ public class Personal_information {
     
     @Override
     public String toString() {
-        return getname();
+        return getsurname();
     }
     
     public String getname() {

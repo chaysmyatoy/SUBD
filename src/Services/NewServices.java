@@ -192,7 +192,7 @@ public class NewServices extends javax.swing.JDialog {
                  System.out.println(i);
  
                 Random rnd = new Random();
-                wm.insertOrUpdate(null, Data.servicesname[rnd.nextInt(Data.servicesname.length-1)], Data.description[rnd.nextInt(Data.description.length-1)], Data.value[rnd.nextInt(Data.value.length-1)]);
+                wm.insertOrUpdate(null, Data.servicesname.get(rnd.nextInt(Data.servicesname.size()-1)), Data.description.get(rnd.nextInt(Data.description.size()-1)), Data.value.get(rnd.nextInt(Data.value.size()-1)));
 
             }
         } catch (SQLException ex) {

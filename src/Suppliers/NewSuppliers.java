@@ -210,7 +210,7 @@ public class NewSuppliers extends javax.swing.JDialog {
 
                  System.out.println(i);
                 Random rnd = new Random();
-                wm.insertOrUpdate(null, Data.surnames[rnd.nextInt(Data.surnames.length-1)], Data.representative[rnd.nextInt(Data.representative.length-1)], Data.addreses[rnd.nextInt(Data.addreses.length-1)],Data.numbers[rnd.nextInt(Data.numbers.length-1)]);
+                wm.insertOrUpdate(null, Data.surnames.get(rnd.nextInt(Data.surnames.size()-1)), Data.representative.get(rnd.nextInt(Data.representative.size()-1)), Data.addreses.get(rnd.nextInt(Data.addreses.size()-1)), Data.numbers.get(rnd.nextInt(Data.numbers.size()-1)));
 
             }
         } catch (SQLException ex) {

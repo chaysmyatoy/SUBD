@@ -244,8 +244,7 @@ public class NewPersonal_information extends javax.swing.JDialog {
            
                  System.out.println(i);
                 Random rnd = new Random();
-                wm.insertOrUpdate(null, Data.names[rnd.nextInt(Data.names.length-1)], Data.surnames[rnd.nextInt(Data.surnames.length-1)], Data.patronymics[rnd.nextInt(Data.patronymics.length-1)],
-                   Data.addreses[rnd.nextInt(Data.addreses.length-1)], Data.numbers[rnd.nextInt(Data.numbers.length-1)], Data.dobs[rnd.nextInt(Data.dobs.length-1)]);
+                wm.insertOrUpdate(null, Data.names.get(rnd.nextInt(Data.names.size()-1)), Data.surnames.get(rnd.nextInt(Data.surnames.size()-1)), Data.patronymics.get(rnd.nextInt(Data.patronymics.size()-1)), Data.addreses.get(rnd.nextInt(Data.addreses.size()-1)), Data.numbers.get(rnd.nextInt(Data.numbers.size()-1)), Data.dobs.get(rnd.nextInt(Data.dobs.size()-1)));
 
             }
         } catch (SQLException ex) {
